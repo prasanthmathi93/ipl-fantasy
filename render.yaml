@@ -1,0 +1,21 @@
+# Render.com deploy config — push this repo to GitHub, then
+# "New + / Blueprint" in Render and point it at the repo.
+services:
+  - type: web
+    name: ipl-fantasy
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn 'run:app' --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    healthCheckPath: /
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: CRICKETDATA_API_KEY
+        sync: false # paste your CricketData.org key in the Render dashboard
+      - key: DATABASE_URL
+        sync: false # set to a persistent Postgres URL for a real league;
+                    # without it the app uses SQLite (ephemeral on free tier)
+      - key: DAILY_API_CAP
+        value: "95"
